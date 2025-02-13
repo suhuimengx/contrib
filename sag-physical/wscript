@@ -1,0 +1,50 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+
+    # Register 'protocols' module with dependencies
+    module = bld.create_ns3_module('sag-physical', ['core', 'internet', 'applications', 'point-to-point', 'traffic-control'])
+
+    # Source files
+    module.source = [    	
+    	##### link & physical #####
+	# gsl link & gsl channel parent
+	'helper/sag_physical_gsl_helper.cc',
+    	'model/sag_physical_layer_gsl.cc',
+    	
+    	'model/sag_physical_layer.cc',
+    	'model/per_tag.cc',
+
+        ]
+
+    # Header files
+    headers = bld(features='ns3header')
+    headers.module = 'sag-physical'
+    headers.source = [
+
+	##### link & physical #####
+	# gsl link & gsl channel parent
+	'helper/sag_physical_gsl_helper.h',
+        'model/sag_physical_layer_gsl.h',
+        
+        'model/sag_physical_layer.h',
+        'model/per_tag.h',
+
+      
+        ]
+
+    # Tests
+    # module_test = bld.create_ns3_module_test_library('protocols')
+    # module_test.source = [
+    #   'test/basic-sim-test-suite.cc',
+    #    ]
+
+    # Main
+    #bld.recurse('main')
+
+    # Examples
+    #if bld.env.ENABLE_EXAMPLES:
+    #    bld.recurse('examples')
+
+    # For now, no Python bindings are generated
+    # bld.ns3_python_bindings()

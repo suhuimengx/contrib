@@ -1,0 +1,34 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('basic-simulation', ['core', 'internet', 'applications', 'point-to-point', 'mpi', 'satellite', 'mobility', 'internet-apps'])
+    module.source = [
+        'model/basic-simulation.cc',
+        'model/exp-util.cc',
+        'model/distributed_node_system_id_assignment.cc',
+        
+        ]
+
+    # module_test = bld.create_ns3_module_test_library('satellite-network')
+    # module_test.source = [
+    #     'test/satellite-network-test-suite.cc',
+    #    ]
+
+    headers = bld(features='ns3header')
+    headers.module = 'basic-simulation'
+    headers.source = [
+        'model/basic-simulation.h',
+        'model/exp-util.h',
+        'model/distributed_node_system_id_assignment.h',
+
+
+        'model/cppmap3d.hh',
+        'model/cppjson2structure.hh',
+        'model/json.hpp',
+        ]
+
+    #if bld.env.ENABLE_EXAMPLES:
+    #  bld.recurse('examples')
+
+    # bld.ns3_python_bindings()
+

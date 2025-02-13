@@ -1,0 +1,137 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+
+    # Register 'protocols' module with dependencies
+    module = bld.create_ns3_module('sag-application', ['core', 'scpstp','internet', 'applications', 'point-to-point', 'traffic-control'])
+
+    # Source files
+    module.source = [
+        ##### application #####
+    	# application parent
+    	'helper/sag_application_helper.cc',
+    	'helper/sag_application_schedule.cc',
+    	'helper/traffic_generation_model.cc',
+    	'model/sag_application_layer.cc',
+    	'model/sag_burst_info.cc',
+    	
+    	# udp flow
+        'helper/sag_udp_scheduler/sag_application_schedule_udp.cc',
+        'model/sag_udp_flow/sag_application_layer_udp.cc',
+        
+        # tcp flow
+        'helper/sag_tcp_scheduler/sag_application_schedule_tcp.cc',
+        'model/sag_tcp_flow/sag_application_layer_tcp_send.cc',
+        'model/sag_tcp_flow/sag_application_layer_tcp_sink.cc',
+
+        # quic flow
+        'helper/sag_quic_scheduler/sag_application_schedule_quic.cc',
+        'model/sag_quic_flow/sag_application_layer_quic_send.cc',
+        'model/sag_quic_flow/sag_application_layer_quic_sink.cc',
+
+        # scps-tp flow
+        'model/sag_scps_tp_flow/sag_application_layer_scps_tp_send.cc',
+        'model/sag_scps_tp_flow/sag_application_layer_scps_tp_sink.cc',
+        
+    	# rtp
+        'helper/sag_rtp_scheduler/sag_application_schedule_rtp.cc',
+        'model/sag_rtp/sag_rtp_header.cc',
+        'model/sag_rtp/sag_rtp_controller.cc',
+        'model/sag_rtp/sag_rtp_dummy_controller.cc',
+        'model/sag_rtp/sag_rtp_nada_controller.cc',
+        'model/sag_rtp/sag_application_layer_rtp_sender.cc',
+        'model/sag_rtp/sag_application_layer_rtp_receiver.cc',
+        'model/sag_rtp/traces-reader.cc',
+        'model/sag_rtp/syncodecs.cc',
+        'model/sag_rtp/sag_rtp_constants.cc',
+        
+        # 3GppHttp
+        'helper/sag_3gpphttp_scheduler/sag_application_schedule_3gpphttp.cc',
+        
+        # ftp
+        'helper/sag_ftp_scheduler/sag_application_schedule_ftp.cc',
+        'model/sag_ftp/ftp_send.cc',
+        'model/sag_ftp/ftp_sink.cc',
+        
+        'helper/statistic.cc',
+    	'model/route_trace_tag.cc',
+    	'model/delay_trace_tag.cc',
+    	'model/id_seq_tag.cc',
+
+
+        ]
+
+    # Header files
+    headers = bld(features='ns3header')
+    headers.module = 'sag-application'
+    headers.source = [
+    	##### application #####
+	# application parent
+        'helper/sag_application_helper.h',
+        'helper/sag_application_schedule.h',
+        'helper/traffic_generation_model.h',
+        'model/sag_application_layer.h',
+        
+        # udp flow
+        'helper/sag_udp_scheduler/sag_application_schedule_udp.h',
+        'model/sag_udp_flow/sag_application_layer_udp.h',
+        'model/id_seq_tag.h',
+        
+        # tcp flow
+        'helper/sag_tcp_scheduler/sag_application_schedule_tcp.h',
+        'model/sag_tcp_flow/sag_application_layer_tcp_send.h',
+        'model/sag_tcp_flow/sag_application_layer_tcp_sink.h',
+
+        # quic flow
+        'helper/sag_quic_scheduler/sag_application_schedule_quic.h',
+        'model/sag_quic_flow/sag_application_layer_quic_send.h',
+        'model/sag_quic_flow/sag_application_layer_quic_sink.h',
+
+        # scps-tp flow
+        'model/sag_scps_tp_flow/sag_application_layer_scps_tp_send.h',
+        'model/sag_scps_tp_flow/sag_application_layer_scps_tp_sink.h',
+
+		# rtp
+		'helper/sag_rtp_scheduler/sag_application_schedule_rtp.h',
+		'model/sag_rtp/sag_rtp_constants.h',
+        'model/sag_rtp/sag_rtp_header.h',
+        'model/sag_rtp/sag_rtp_controller.h',
+        'model/sag_rtp/sag_rtp_dummy_controller.h',
+        'model/sag_rtp/sag_rtp_nada_controller.h',
+        'model/sag_rtp/sag_application_layer_rtp_sender.h',
+        'model/sag_rtp/sag_application_layer_rtp_receiver.h',
+        'model/sag_rtp/traces-reader.h',
+        'model/sag_rtp/syncodecs.h',
+        
+         # 3GppHttp
+        'helper/sag_3gpphttp_scheduler/sag_application_schedule_3gpphttp.h',
+        
+         # ftp
+        'helper/sag_ftp_scheduler/sag_application_schedule_ftp.h',
+        'model/sag_ftp/ftp_send.h',
+        'model/sag_ftp/ftp_sink.h',
+        
+        
+        'helper/statistic.h',
+    	'model/route_trace_tag.h',
+    	'model/delay_trace_tag.h',
+    	 'model/sag_burst_info.h',
+
+      
+        ]
+
+    # Tests
+    # module_test = bld.create_ns3_module_test_library('protocols')
+    # module_test.source = [
+    #   'test/basic-sim-test-suite.cc',
+    #    ]
+
+    # Main
+    #bld.recurse('main')
+
+    # Examples
+    #if bld.env.ENABLE_EXAMPLES:
+    #    bld.recurse('examples')
+
+    # For now, no Python bindings are generated
+    # bld.ns3_python_bindings()

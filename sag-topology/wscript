@@ -1,0 +1,39 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('sag-topology', ['core', 'internet', 'applications', 'point-to-point', 'mpi', 'satellite', 'mobility', 'internet-apps', 'sag-application', 'sag-network', 'sag-datalink', 'sag-physical', 'sag-transport'])
+    module.source = [
+        'model/walker-constellation-structure.cc',
+        'model/endpoints.cc',
+        'model/ground-station.cc',
+        'model/topology-satellite-network.cc',
+        
+        'model/gsl_switch_strategy.cc',
+        'model/isl_establish_rule.cc',
+        
+        ]
+
+    # module_test = bld.create_ns3_module_test_library('satellite-network')
+    # module_test.source = [
+    #     'test/satellite-network-test-suite.cc',
+    #    ]
+
+    headers = bld(features='ns3header')
+    headers.module = 'sag-topology'
+    headers.source = [
+        'model/topology.h',
+        'model/walker-constellation-structure.h',
+        'model/endpoints.h',
+        'model/ground-station.h',
+        'model/topology-satellite-network.h',
+        
+        'model/gsl_switch_strategy.h',
+        'model/isl_establish_rule.h',
+        
+        ]
+
+    #if bld.env.ENABLE_EXAMPLES:
+    #  bld.recurse('examples')
+
+    # bld.ns3_python_bindings()
+

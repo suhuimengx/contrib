@@ -1,0 +1,27 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('statistic', ['core', 'internet', 'applications', 'point-to-point', 'traffic-control'])
+#    module.env.append_value("LIB", ["cspice"])
+    module.source = [
+        'model/trajectory.cc',
+        'model/network_statistic.cc',
+        ]
+
+    # module_test = bld.create_ns3_module_test_library('satellite-network')
+    # module_test.source = [
+    #     'test/satellite-network-test-suite.cc',
+    #    ]
+
+    headers = bld(features='ns3header')
+    headers.module = 'statistic'
+    headers.source = [
+        'model/trajectory.h',
+        'model/network_statistic.h',
+        ]
+
+    #if bld.env.ENABLE_EXAMPLES:
+    #  bld.recurse('examples')
+
+    # bld.ns3_python_bindings()
+

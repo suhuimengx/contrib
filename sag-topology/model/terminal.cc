@@ -1,0 +1,150 @@
+/*
+ * Copyright (c) 2023 NJU
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Xiaoyu Liu <xyliu0119@163.com>
+ */
+
+
+#include "ground-station.h"
+#include "ns3/core-module.h"
+#include "ns3/mobility-module.h"
+#include "ns3/internet-module.h"
+//#include "ns3/mpi-interface.h"
+
+
+namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE("GroundStation");
+
+NS_OBJECT_ENSURE_REGISTERED(GroundStation);
+
+TypeId
+GroundStation::GetTypeId (void)
+{
+    static TypeId tid = TypeId("ns3::GroundStation").SetParent<Object>().SetGroupName("SatelliteNetwork");
+    return tid;
+}
+
+GroundStation::GroundStation(
+        uint32_t gid, std::string name, uint32_t sleep_time,
+        double latitude, double longitude, double elevation,
+        Vector cartesian_position
+)
+	: m_gid(gid), m_name(name), m_sleep_time(sleep_time),
+      m_latitude(latitude), m_longitude(longitude), m_elevation(elevation),
+      m_cartesian_position(cartesian_position)
+{
+    NS_LOG_FUNCTION(this);
+    //m_state = waitConnect;
+    m_groundStationNodeP = nullptr;
+}
+
+GroundStation::~GroundStation()
+{
+    NS_LOG_FUNCTION(this);
+}
+
+uint32_t
+GroundStation::GetGid()
+{
+    return m_gid;
+}
+
+std::string
+GroundStation::GetName()
+{
+    return m_name;
+}
+
+void
+GroundStation::SetLatitude(double latitude){
+	m_latitude = latitude;
+}
+
+void
+GroundStation::SetLongitude(double longitude){
+	m_longitude = longitude;
+}
+
+void
+GroundStation::SetElevation(double elevation){
+	m_elevation = elevation;
+}
+
+double
+GroundStation::GetLatitude()
+{
+    return m_latitude;
+}
+
+double
+GroundStation::GetLongitude()
+{
+    return m_longitude;
+}
+
+double
+GroundStation::GetElevation()
+{
+    return m_elevation;
+}
+
+void
+GroundStation::SetCartesianPosition(Vector position){
+	m_cartesian_position = position;
+}
+
+Vector
+GroundStation::GetCartesianPosition()
+{
+    return m_cartesian_position;
+}
+
+//GroundStationState GroundStation::GetState()
+//{
+//    return m_state;
+//}
+//void GroundStation::SetState(GroundStationState state)
+//{
+//    m_state = state;
+//}
+
+uint32_t GroundStation::GetSleepTime()
+{
+    return m_sleep_time;
+}
+void GroundStation::SetSleepTime(uint32_t sleep_time)
+{
+    m_sleep_time = sleep_time;
+}
+
+std::string
+GroundStation::ToString()
+{
+    std::stringstream info;
+    info << "Ground station[";
+    info << "gid=" << m_gid << ", ";
+    info << "name=" << m_name << ", ";
+    info << "latitude=" << m_latitude << ", ";
+    info << "longitude=" << m_longitude << ", ";
+    info << "elevation=" << m_elevation << ", ";
+    info << "cartesian_position=" << m_cartesian_position;
+    info << "]";
+    return info.str();
+}
+
+} // namespace ns3
+

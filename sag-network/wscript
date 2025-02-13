@@ -1,0 +1,241 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+
+    # Register 'protocols' module with dependencies
+    module = bld.create_ns3_module('sag-network', ['core', 'internet', 'applications', 'point-to-point', 'traffic-control'])
+
+    # Source files
+    module.source = [
+       'model/addressing_rule.cc',
+    	##### routing #####
+    	# routing parent
+    	'helper/sag_routing_helper.cc',
+        'helper/sag_routing_helper_ipv6.cc',
+        'model/sag_routing_protocal.cc',
+        'model/sag_routing_protocal_ipv6.cc',
+        'model/tool_arbiter/arbiter.cc',
+        'model/tool_arbiter/arbiter-satnet.cc',
+        'model/tool_arbiter/arbiter-single-forward.cc',
+        
+        'model/sag_routing_table.cc',
+        'model/sag_routing_table_entry.cc',
+        
+        # gs_forward
+        'helper/satellite_to_ground_routing_helper/sag_gs_static_routing_helper.cc',
+        'helper/satellite_to_ground_routing_configure/satellite_to_ground_routing_configure.cc',
+        'helper/satellite_to_ground_routing_helper/sag_gs_static_routing_helper_ipv6.cc',
+        'helper/satellite_to_ground_routing_configure/satellite_to_ground_routing_ipv6_configure.cc',
+        
+        # minimum hop routing
+        'helper/minimum_hop_routing_helper/minimum_hop_count_routing_helper.cc',
+        'helper/minimum_hop_routing_configure/minimum_hop_routing_configure.cc',
+        'model/minimum_hop_routing/ipv4-minimum-hop-routing.cc',
+        'helper/minimum_hop_routing_helper/minimum_hop_count_routing_helper_ipv6.cc',
+        'helper/minimum_hop_routing_configure/minimum_hop_routing_ipv6_configure.cc',
+        'model/minimum_hop_routing/ipv6-minimum-hop-routing.cc',
+        
+        'model/ipv4-arbiter-routing.cc',
+    	
+    	
+    	# aodv
+    	'helper/aodv_routing_helper/sag_aodv_helper.cc',
+    	'helper/aodv_routing_configure/aodv_routing_configure.cc',
+    	
+    	# ospf
+    	'helper/open_shortest_path_first_v2_helper/sag_open_shortest_path_first_helper.cc',
+    	'helper/open_shortest_path_first_v2_configure/open_shortest_path_first_configure.cc',
+    	'model/sag_ospf_v2/open_shortest_path_first.cc',
+    	'model/sag_ospf_v2/ospf-neighbor.cc',
+    	'model/sag_ospf_v2/ospf-packet.cc',
+    	'model/sag_ospf_v2/ospf_link_state_packet.cc',
+    	'model/sag_ospf_v2/ospf-link-state-database.cc',
+    	'model/sag_ospf_v2/ospf-lsa-identifier.cc',
+    	'model/sag_ospf_v2/ospf-build-routing.cc',
+    	
+    	# bgp
+    	'helper/bgp_routing_helper/bgp-routing-helper.cc',
+    	'helper/bgp_routing_configure/bgp_routing_configure.cc',
+    	
+    	'helper/bgp-configure/bgp-configure.cc',
+        'helper/bgp-configure/bgp-configure-full-mesh.cc',
+        
+    	
+    	# tlr
+        'helper/sag_routing_tlr_helper/sag_traffic_light_based_routing_helper.cc',
+        'model/sag_routing_tlr/traffic_light_based_routing.cc',
+        'model/sag_routing_tlr/tlr-neighbor.cc',
+        'model/sag_routing_tlr/tlr-packet.cc',
+        'model/sag_routing_tlr/tlr_link_state_packet.cc',
+        'model/sag_routing_tlr/tlr-link-state-database.cc',
+        'model/sag_routing_tlr/tlr-queue.cc',
+        'model/sag_routing_tlr/tlr-lsa-identifier.cc',
+        'model/sag_routing_tlr/tlr-routing-table.cc',
+        'model/sag_routing_tlr/tlr-routing-table-entry.cc',
+        'model/sag_routing_tlr/tlr-build-routing.cc',
+
+        # fybbr
+        'helper/sag_fybbr_routing_helper/sag_fybbr_routing_helper.cc',
+        'model/sag_fybbr_routing/centralized_packet.cc',
+        'model/sag_fybbr_routing/fybbr-build-routing.cc',
+        'model/sag_fybbr_routing/fybbr-link-state-database.cc',
+        'model/sag_fybbr_routing/fybbr_link_state_packet.cc',
+        'model/sag_fybbr_routing/fybbr-lsa-identifier.cc',
+        'model/sag_fybbr_routing/fybbr-neighbor.cc',
+        'model/sag_fybbr_routing/fybbr-packet.cc',
+        'model/sag_fybbr_routing/fybbr-routing-table.cc',
+        'model/sag_fybbr_routing/fybbr_Rout.cc',
+        'model/sag_fybbr_routing/fybbr-queue.cc',
+
+    	
+    	# iadr
+        'helper/sag_iadr_routing_helper/sag_iadr_routing_helper.cc',
+        'model/sag_iadr_routing/iadr-centralized_packet.cc',
+        'model/sag_iadr_routing/iadr-build-routing.cc',
+        'model/sag_iadr_routing/iadr-link-state-database.cc',
+        'model/sag_iadr_routing/iadr_link_state_packet.cc',
+        'model/sag_iadr_routing/iadr-lsa-identifier.cc',
+        'model/sag_iadr_routing/iadr-neighbor.cc',
+        'model/sag_iadr_routing/iadr-packet.cc',
+        'model/sag_iadr_routing/iadr-routing-table.cc',
+        'model/sag_iadr_routing/iadr_Rout.cc',
+        'model/sag_iadr_routing/iadr-queue.cc',
+        
+        
+        # mplb
+        'helper/sag_mplb_helper/sag_mplb_routing_helper.cc',
+        'model/sag_multipath_routing/mplb-routing.cc',
+        'model/sag_multipath_routing/mplb-build-routing.cc',
+         
+        # routing trace
+    	'helper/routing_module_monitor.cc',
+    	
+
+
+        ]
+
+    # Header files
+    headers = bld(features='ns3header')
+    headers.module = 'sag-network'
+    headers.source = [
+        'model/addressing_rule.h',
+    	##### routing protocol #####
+    	# routing protocol parent
+        'helper/sag_routing_helper.h',
+        'helper/sag_routing_helper_ipv6.h',
+        'model/sag_routing_protocal.h',
+        'model/sag_routing_protocal_ipv6.h',
+        'model/tool_arbiter/arbiter.h',
+        'model/tool_arbiter/arbiter-satnet.h',
+        'model/tool_arbiter/arbiter-single-forward.h',
+        
+        'model/sag_routing_table.h',
+        'model/sag_routing_table_entry.h',
+        
+        # gs_forward
+        'helper/satellite_to_ground_routing_helper/sag_gs_static_routing_helper.h',
+        'helper/satellite_to_ground_routing_configure/satellite_to_ground_routing_configure.h',
+        'helper/satellite_to_ground_routing_helper/sag_gs_static_routing_helper_ipv6.h',
+        'helper/satellite_to_ground_routing_configure/satellite_to_ground_routing_ipv6_configure.h',
+        
+        # minimum hop routing
+        'helper/minimum_hop_routing_helper/minimum_hop_count_routing_helper.h',
+        'helper/minimum_hop_routing_configure/minimum_hop_routing_configure.h',
+        'model/minimum_hop_routing/ipv4-minimum-hop-routing.h',
+        'helper/minimum_hop_routing_helper/minimum_hop_count_routing_helper_ipv6.h',
+        'helper/minimum_hop_routing_configure/minimum_hop_routing_ipv6_configure.h',
+        'model/minimum_hop_routing/ipv6-minimum-hop-routing.h',
+        
+        'model/ipv4-arbiter-routing.h',
+    	
+    	
+    	# aodv
+    	'helper/aodv_routing_helper/sag_aodv_helper.h',
+    	'helper/aodv_routing_configure/aodv_routing_configure.h',
+    	
+    	# ospf
+    	'helper/open_shortest_path_first_v2_helper/sag_open_shortest_path_first_helper.h',
+    	'helper/open_shortest_path_first_v2_configure/open_shortest_path_first_configure.h',
+    	'model/sag_ospf_v2/open_shortest_path_first.h',
+    	'model/sag_ospf_v2/ospf-neighbor.h',
+    	'model/sag_ospf_v2/ospf-packet.h',
+    	'model/sag_ospf_v2/ospf_link_state_packet.h',
+    	'model/sag_ospf_v2/ospf-link-state-database.h',
+    	'model/sag_ospf_v2/ospf-lsa-identifier.h',
+    	'model/sag_ospf_v2/ospf-build-routing.h',
+    	
+    	# bgp
+    	'helper/bgp_routing_helper/bgp-routing-helper.h',
+    	'helper/bgp_routing_configure/bgp_routing_configure.h',
+    	
+    	'helper/bgp-configure/bgp-configure.h',
+        'helper/bgp-configure/bgp-configure-full-mesh.h',
+    	
+    	
+    	# tlr
+        'helper/sag_routing_tlr_helper/sag_traffic_light_based_routing_helper.h',
+        'model/sag_routing_tlr/traffic_light_based_routing.h',
+        'model/sag_routing_tlr/tlr-neighbor.h',
+        'model/sag_routing_tlr/tlr-packet.h',
+        'model/sag_routing_tlr/tlr_link_state_packet.h',
+        'model/sag_routing_tlr/tlr-link-state-database.h',
+        'model/sag_routing_tlr/tlr-queue.h',
+        'model/sag_routing_tlr/tlr-lsa-identifier.h',
+        'model/sag_routing_tlr/tlr-routing-table.h',
+        'model/sag_routing_tlr/tlr-routing-table-entry.h',
+        'model/sag_routing_tlr/tlr-build-routing.h',
+
+        # fybbr
+        'helper/sag_fybbr_routing_helper/sag_fybbr_routing_helper.h',
+        'model/sag_fybbr_routing/centralized_packet.h',
+        'model/sag_fybbr_routing/fybbr-build-routing.h',
+        'model/sag_fybbr_routing/fybbr-link-state-database.h',
+        'model/sag_fybbr_routing/fybbr_link_state_packet.h',
+        'model/sag_fybbr_routing/fybbr-lsa-identifier.h',
+        'model/sag_fybbr_routing/fybbr-neighbor.h',
+        'model/sag_fybbr_routing/fybbr-packet.h',
+        'model/sag_fybbr_routing/fybbr-routing-table.h',
+        'model/sag_fybbr_routing/fybbr_Rout.h',
+        'model/sag_fybbr_routing/fybbr-queue.h',
+    	
+    	
+    	# iadr
+        'helper/sag_iadr_routing_helper/sag_iadr_routing_helper.h',
+        'model/sag_iadr_routing/iadr-centralized_packet.h',
+        'model/sag_iadr_routing/iadr-build-routing.h',
+        'model/sag_iadr_routing/iadr-link-state-database.h',
+        'model/sag_iadr_routing/iadr_link_state_packet.h',
+        'model/sag_iadr_routing/iadr-lsa-identifier.h',
+        'model/sag_iadr_routing/iadr-neighbor.h',
+        'model/sag_iadr_routing/iadr-packet.h',
+        'model/sag_iadr_routing/iadr-routing-table.h',
+        'model/sag_iadr_routing/iadr_Rout.h',
+        'model/sag_iadr_routing/iadr-queue.h',
+        
+        # mplb
+        'helper/sag_mplb_helper/sag_mplb_routing_helper.h',
+        'model/sag_multipath_routing/mplb-routing.h',
+        'model/sag_multipath_routing/mplb-build-routing.h',
+        
+        
+        # routing trace
+    	'helper/routing_module_monitor.h',
+
+      
+        ]
+
+    # Tests
+    # module_test = bld.create_ns3_module_test_library('protocols')
+    # module_test.source = [
+    #   'test/basic-sim-test-suite.cc',
+    #    ]
+
+    # Main
+    #bld.recurse('main')
+
+    # Examples
+    #if bld.env.ENABLE_EXAMPLES:
+    #    bld.recurse('examples')
+
+    # For now, no Python bindings are generated
+    # bld.ns3_python_bindings()
