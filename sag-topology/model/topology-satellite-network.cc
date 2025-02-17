@@ -25,6 +25,10 @@
 #include "ns3/satellite.h"
 #include <random>
 #include "ns3/quic-helper.h"
+#include "ns3/scpstp-helper.h"
+#include "ns3/traffic-control-layer.h"
+#include "ns3/red-queue-disc.h"
+
 #define pi 3.14159265358979311599796346854
 
 namespace ns3 {
@@ -224,9 +228,35 @@ namespace ns3 {
 
         std::cout << std::endl;
 
-
-
-    }
+				
+				// for(uint32_t i = 0; i < m_satelliteNodes.GetN(); i++){
+				//     if( m_satelliteNodes.Get(i)->GetObject<TrafficControlLayer>() != 0){
+				//         for(uint32_t j = 0; j < m_satelliteNodes.Get(i)->GetNDevices(); j++)
+				//         {
+				//             Ptr<TrafficControlLayer> trafficControlLayer = m_satelliteNodes.Get(i)->GetObject<TrafficControlLayer>();
+				//             // 获取RedQueueDisc 的tid
+				//             TypeId tid = ns3::RedQueueDisc::GetTypeId();
+				//             std::cout << tid << std::endl;
+				//         }
+				//         //std::cout << "Satellite [" << i << "] has " <<  "TrafficControlLayer: " << m_satelliteNodes.Get(i)->GetObject<TrafficControlLayer>()-> GetRootQueueDiscOnDevice(m_satelliteNodes.Get(i)->GetDevice(j))->GetInstanceTypeId().GetName() << std::endl;
+				//     }
+				//     else{
+				//         std::cout << "Satellite [" << i << "] hasn't " <<  "TrafficControlLayer" << std::endl;
+				//     }
+				// }
+				// for(uint32_t i = 0; i < m_groundStationNodes.GetN(); i++){
+				//     if( m_groundStationNodes.Get(i)->GetObject<TrafficControlLayer>() != 0){
+				//         for(uint32_t j = 0; j < m_groundStationNodes.Get(i)->GetNDevices(); j++)
+				//         {
+				//             Ptr<TrafficControlLayer> trafficControlLayer = m_groundStationNodes.Get(i)->GetObject<TrafficControlLayer>();
+				//         }
+				//         //std::cout << "GroundStation [" << i << "] has " <<  "TrafficControlLayer: " << m_groundStationNodes.Get(i)->GetObject<TrafficControlLayer>()-> GetRootQueueDiscOnDevice(m_groundStationNodes.Get(i)->GetDevice(j))->GetInstanceTypeId().GetName() << std::endl;
+				//     }
+				//     else{
+				//         std::cout << "GroundStation [" << i << "] hasn't " <<  "TrafficControlLayer" << std::endl;
+				//     }
+				// }
+		}
 
     void
     TopologySatelliteNetwork::BuildTopologyOnly() {
@@ -251,8 +281,14 @@ namespace ns3 {
         // Install internet stacks on all nodes
 		InternetStackHelper internet1;
 		internet1.Install(m_allNodes);
+				// Install ScpsTp
+		ScpsTpHelper scpstp;
+		scpstp.Install(m_allNodes);
     	m_basicSimulation->RegisterTimestamp("Install Internet stacks");
         std::cout << "  > Installed Internet stacks" << std::endl;
+
+	
+
 
       	// Add unique loop_back address for each node
     	Ipv4AddressHelper ipv4AddrHelper_lp;
@@ -1114,16 +1150,21 @@ namespace ns3 {
 		}
 
     	if(m_enable_distributed){
+
+				//ScpsTpHelper
+				ScpsTpHelper scpstp;
     		// InternetStackHelper
     		QuicHelper internet1;
 			internet1.SetRoutingHelper(list);
 			internet1.SetRoutingHelper(v6list);
 			//internet1.SetSAGTransportLayerType(m_basicSimulation->GetConfigParamOrDefault("transport_layer_protocal", "ns3::SAGTransportLayer"));
 			internet1.InstallQuic(m_nodesCurSystem);
+			//Install ScpsTp
+			scpstp.InstallScpsTp(m_nodesCurSystem);
 
 			QuicHelper internet2;
 			internet2.InstallQuic(m_nodesCurSystemVirtual);
-
+			scpstp.InstallScpsTp(m_nodesCurSystemVirtual);
 
 			if(m_groundStationNodes.GetN () == 0){
 				return;
@@ -1136,6 +1177,8 @@ namespace ns3 {
 			//internet2.SetSAGTransportLayerType(m_basicSimulation->GetConfigParamOrDefault("transport_layer_protocal", "ns3::SAGTransportLayer"));
 			internet3.InstallQuic(m_nodesGsCurSystem);
 			internet2.InstallQuic(m_nodesGsCurSystemVirtual);
+			scpstp.InstallScpsTp(m_nodesGsCurSystem);
+			scpstp.InstallScpsTp(m_nodesGsCurSystemVirtual);
 
 //		  if(m_system_id == 0){
 //			std::stringstream stream;
@@ -1149,10 +1192,13 @@ namespace ns3 {
     	}
     	else{
     		QuicHelper internet1;
+				//ScpsTpHelper
+				ScpsTpHelper scpstp;
 			internet1.SetRoutingHelper(list);
 			internet1.SetRoutingHelper(v6list);
 			//internet1.SetSAGTransportLayerType(m_basicSimulation->GetConfigParamOrDefault("transport_layer_protocal", "ns3::SAGTransportLayer"));
 			internet1.InstallQuic(m_satelliteNodes);
+			scpstp.InstallScpsTp(m_satelliteNodes);
 
 
 			if(m_groundStationNodes.GetN () == 0){
@@ -1165,6 +1211,7 @@ namespace ns3 {
 			//internet2.SetRoutingHelper(list);
 			//internet2.SetSAGTransportLayerType(m_basicSimulation->GetConfigParamOrDefault("transport_layer_protocal", "ns3::SAGTransportLayer"));
 			internet2.InstallQuic(m_groundStationNodes);
+			scpstp.InstallScpsTp(m_groundStationNodes);
     	}
 
     	m_basicSimulation->RegisterTimestamp("Install Internet stacks");
@@ -1496,6 +1543,14 @@ namespace ns3 {
         tch_uninstaller.Uninstall(netDevices.Get(0));
         tch_uninstaller.Uninstall(netDevices.Get(1));
 
+			// Install traffic control layer on islNetdevices with ECN enabled
+			TrafficControlHelper tch_isl_ecn;
+			Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
+				QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, m_isl_max_queue_size_pkts)));
+			tch_isl_ecn.SetRootQueueDisc("ns3::RedQueueDisc","UseEcn", BooleanValue(true));
+      tch_isl_ecn.Install(netDevices.Get(0));
+			tch_isl_ecn.Install(netDevices.Get(1));
+
 //        // Utilization tracking
 //        if (m_enable_link_utilization_tracking) {
 //            netDevices.Get(0)->GetObject<SAGLinkLayer>()->EnableUtilizationTracking(m_link_utilization_tracking_interval_ns);
@@ -1550,6 +1605,13 @@ namespace ns3 {
         tch_uninstaller.Uninstall(netDevices.Get(0));
         tch_uninstaller.Uninstall(netDevices.Get(1));
 
+			// Install traffic control layer on islNetdevices with ECN enabled
+			TrafficControlHelper tch_isl_ecn;
+			Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
+				QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, m_isl_max_queue_size_pkts)));
+				tch_isl_ecn.SetRootQueueDisc("ns3::RedQueueDisc","UseEcn", BooleanValue(true));
+				tch_isl_ecn.Install(netDevices.Get(0));
+				tch_isl_ecn.Install(netDevices.Get(1));
 //        // Utilization tracking
 //        if (m_enable_link_utilization_tracking) {
 //            netDevices.Get(0)->GetObject<SAGLinkLayer>()->EnableUtilizationTracking(m_link_utilization_tracking_interval_ns);
@@ -2145,6 +2207,20 @@ namespace ns3 {
 		}
 		std::cout << "    >> Finished removing GSL queueing disciplines for all satellites" << std::endl;
 
+
+
+
+		// Install traffic control layer on GSL with ECN
+		TrafficControlHelper tch_gsl_ecn;
+		Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
+			QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, m_gsl_max_queue_size_pkts)));
+		tch_gsl_ecn.SetRootQueueDisc("ns3::RedQueueDisc","UseEcn", BooleanValue(true));
+		for (uint32_t i = 0; i < devices.GetN(); i++) {
+			tch_gsl_ecn.Install(devices.Get(i));
+		}
+		std::cout << "    >> Finished installing traffic control layer qdisc with ECN for all satellites' GSL netdevices" << std::endl;
+
+
 		if(m_isIPv4Networking){
 			InitializeSatellitesArpCaches();
 			std::cout << "    >> Finished initializing Arps for all satellites" << std::endl;
@@ -2371,6 +2447,16 @@ namespace ns3 {
 			// NS_ASSERT_MSG (nadr == 1, "One interface one address permitted");
 
 		}
+
+		//Install traffic control layer on GSL with ECN
+		TrafficControlHelper tch_gsl_ecn;
+		Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
+			QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, m_gsl_max_queue_size_pkts)));
+		tch_gsl_ecn.SetRootQueueDisc("ns3::RedQueueDisc","UseEcn", BooleanValue(true));
+		tch_gsl_ecn.Install(gslGsNetDevice);
+		//之前已经为gslSatNetDevice安装过TrafficControlLayer，所以这里不需要再次安装
+		//tch_gsl_ecn.Install(gslSatNetDevice);
+
 
 		// notify sat L3
 		gslSatNetDevice->GetObject<SAGLinkLayerGSL>()->NotifyStateToL3Stack();

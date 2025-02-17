@@ -71,6 +71,7 @@ void ScpsTpOptimizer::Generic(std::string filename) {
 		    // to be performed.
 		    printf("  > SNACK option................ %s\n", opt_snack_enabled ? "enabled" : "disabled");
 		    //Config::SetDefault("ns3::TcpSocketBase::Snack", BooleanValue(opt_snack_enabled));
+        Config::SetDefault("ns3::TcpSocketBase::Sack", BooleanValue(false));
 
 		    // Window scaling option
 		    bool opt_win_scaling_enabled = true;  // Default: true.

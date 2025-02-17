@@ -113,6 +113,31 @@ private:
   ObjectFactory m_tcpSinkFactory;
 };
 
+//ScpsTp Application
+class SAGApplicationHelperScpsTpSend : public SAGApplicationHelper
+{
+public:
+  SAGApplicationHelperScpsTpSend (Ptr<ns3::BasicSimulation> basicSimulation, SAGBurstInfoScpsTp entry, uint16_t dstPort, bool enableFlowLoggingToFile);
+
+private:
+  virtual Ptr<Application> InstallPriv (Ptr<Node> node) const;
+
+  ObjectFactory m_scpstpSendFactory;
+};
+
+
+class SAGApplicationHelperScpsTpSink : public SAGApplicationHelper
+{
+  public:
+  SAGApplicationHelperScpsTpSink (Ptr<ns3::BasicSimulation> basicSimulation, std::string protocol, Address address, bool enableFlowLoggingToFile);
+
+private:
+  virtual Ptr<Application> InstallPriv (Ptr<Node> node) const;
+
+  ObjectFactory m_scpstpSinkFactory;
+};
+
+
 //Mengy's:: Quic Send Application
 class SAGApplicationHelperQuicSend : public SAGApplicationHelper
 {

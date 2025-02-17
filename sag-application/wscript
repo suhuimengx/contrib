@@ -30,6 +30,7 @@ def build(bld):
         'model/sag_quic_flow/sag_application_layer_quic_sink.cc',
 
         # scps-tp flow
+        'helper/sag_scps_tp_scheduler/sag_application_schedule_scps_tp.cc',
         'model/sag_scps_tp_flow/sag_application_layer_scps_tp_send.cc',
         'model/sag_scps_tp_flow/sag_application_layer_scps_tp_sink.cc',
         
@@ -88,6 +89,7 @@ def build(bld):
         'model/sag_quic_flow/sag_application_layer_quic_sink.h',
 
         # scps-tp flow
+        'helper/sag_scps_tp_scheduler/sag_application_schedule_scps_tp.h',
         'model/sag_scps_tp_flow/sag_application_layer_scps_tp_send.h',
         'model/sag_scps_tp_flow/sag_application_layer_scps_tp_sink.h',
 

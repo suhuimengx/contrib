@@ -1,7 +1,7 @@
 # -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    module = bld.create_ns3_module('sag-topology', ['core', 'internet', 'applications', 'point-to-point', 'mpi', 'satellite', 'mobility', 'internet-apps', 'sag-application', 'sag-network', 'sag-datalink', 'sag-physical', 'sag-transport'])
+    module = bld.create_ns3_module('sag-topology', ['core', 'internet', 'applications', 'point-to-point', 'mpi', 'satellite', 'mobility', 'internet-apps', 'sag-application', 'sag-network', 'sag-datalink', 'sag-physical', 'sag-transport','scpstp'])
     module.source = [
         'model/walker-constellation-structure.cc',
         'model/endpoints.cc',

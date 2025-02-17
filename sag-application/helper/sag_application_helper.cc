@@ -343,6 +343,59 @@ SAGApplicationHelperTcpSink::InstallPriv (Ptr<Node> node) const
   return (Ptr<Application>)app;
 }
 
+//scpstp sag application helper
+
+SAGApplicationHelperScpsTpSend::SAGApplicationHelperScpsTpSend (Ptr<ns3::BasicSimulation> basicSimulation, SAGBurstInfoScpsTp entry, uint16_t dstPort, bool enableFlowLoggingToFile)
+:SAGApplicationHelper(basicSimulation, entry.GetAdditionalParameters(), entry.GetMetadata())
+{
+  m_scpstpSendFactory.SetTypeId (basicSimulation->GetConfigParamOrDefault("application_layer_protocal_scps_tp_send", "ns3::SAGApplicationLayerScpsTpSend"));
+  SetAttribute (m_scpstpSendFactory, "Protocol", StringValue ("ns3::ScpsTpSocketFactory"));
+  SetAttribute (m_scpstpSendFactory, "DestinationPort", UintegerValue (dstPort));
+  //SetAttribute (m_scpstpSendFactory, "MaxBytes", UintegerValue (entry.GetSizeByte()));
+  SetAttribute (m_scpstpSendFactory, "ScpsTpFlowId", UintegerValue (entry.GetScpsTpFlowId()));
+  SetAttribute (m_scpstpSendFactory, "EnableFlowLoggingToFile", BooleanValue (enableFlowLoggingToFile));
+  SetAttribute (m_scpstpSendFactory, "AdditionalParameters", StringValue (entry.GetAdditionalParameters()));
+
+  SetAttribute (m_scpstpSendFactory, "BaseLogsDir", StringValue (basicSimulation->GetLogsDir()));
+  SetAttribute (m_scpstpSendFactory, "BaseDir", StringValue (basicSimulation->GetRunDir()));
+}
+
+Ptr<Application>
+SAGApplicationHelperScpsTpSend::InstallPriv (Ptr<Node> node) const
+{
+  Ptr<SAGApplicationLayer> app = m_scpstpSendFactory.Create<SAGApplicationLayer> ();
+  //app->SetTransportFactory(m_basicSimulation->GetConfigParamOrDefault("transport_layer_factory", "ns3::SAGTransportSocketFactory"));
+  //app->SetTransportSocket(m_basicSimulation->GetConfigParamOrDefault("transport_layer_socket", "ns3::SAGTransportSocketImpl"));
+  app->SetMaxPayLoadSizeByte(DEFAULT_PACKET_SIZE);  // 1500 - IP头(20) - TCP头(20) = 1460 (Bytes)
+  if(m_traceType != TRACE_TYPE_INVALID && m_codecType != SYNCODEC_TYPE_INVALID){
+	  app->SetTrace(m_traceType);
+	  app->SetCodecType(m_codecType);
+  }
+  node->AddApplication ((Ptr<Application>)app);
+  return (Ptr<Application>)app;
+}
+
+SAGApplicationHelperScpsTpSink::SAGApplicationHelperScpsTpSink (Ptr<ns3::BasicSimulation> basicSimulation, std::string protocol, Address address, bool enableFlowLoggingToFile)
+:SAGApplicationHelper(basicSimulation)
+{
+  m_scpstpSinkFactory.SetTypeId (basicSimulation->GetConfigParamOrDefault("application_layer_protocal_scps_tp_sink", "ns3::SAGApplicationLayerScpsTpSink"));
+  SetAttribute (m_scpstpSinkFactory, "Protocol", StringValue (protocol));
+  SetAttribute (m_scpstpSinkFactory, "Local", AddressValue (address));
+  SetAttribute (m_scpstpSinkFactory, "EnableFlowLoggingToFile", BooleanValue (enableFlowLoggingToFile));
+}
+
+Ptr<Application>
+SAGApplicationHelperScpsTpSink::InstallPriv (Ptr<Node> node) const
+{
+  Ptr<SAGApplicationLayer> app = m_scpstpSinkFactory.Create<SAGApplicationLayer> ();
+  //app->SetTransportFactory(m_basicSimulation->GetConfigParamOrDefault("transport_layer_factory", "ns3::SAGTransportSocketFactory"));
+  //app->SetTransportSocket(m_basicSimulation->GetConfigParamOrDefault("transport_layer_socket", "ns3::SAGTransportSocketImpl"));
+  node->AddApplication ((Ptr<Application>)app);
+  return (Ptr<Application>)app;
+}
+
+
+
 //Mengy's:: Quic Application Setup
 SAGApplicationHelperQuicSend::SAGApplicationHelperQuicSend (Ptr<ns3::BasicSimulation> basicSimulation, SAGBurstInfoTcp entry, uint16_t dstPort, bool enableFlowLoggingToFile)
 :SAGApplicationHelper(basicSimulation, entry.GetAdditionalParameters(), entry.GetMetadata())
