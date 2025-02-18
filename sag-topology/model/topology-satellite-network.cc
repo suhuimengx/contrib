@@ -281,9 +281,10 @@ namespace ns3 {
         // Install internet stacks on all nodes
 		InternetStackHelper internet1;
 		internet1.Install(m_allNodes);
+		/*
 				// Install ScpsTp
 		ScpsTpHelper scpstp;
-		scpstp.Install(m_allNodes);
+		scpstp.Install(m_allNodes);*/
     	m_basicSimulation->RegisterTimestamp("Install Internet stacks");
         std::cout << "  > Installed Internet stacks" << std::endl;
 
@@ -1150,21 +1151,22 @@ namespace ns3 {
 		}
 
     	if(m_enable_distributed){
-
+/*
 				//ScpsTpHelper
-				ScpsTpHelper scpstp;
+				ScpsTpHelper scpstp;*/
     		// InternetStackHelper
     		QuicHelper internet1;
 			internet1.SetRoutingHelper(list);
 			internet1.SetRoutingHelper(v6list);
 			//internet1.SetSAGTransportLayerType(m_basicSimulation->GetConfigParamOrDefault("transport_layer_protocal", "ns3::SAGTransportLayer"));
 			internet1.InstallQuic(m_nodesCurSystem);
+			/*
 			//Install ScpsTp
-			scpstp.InstallScpsTp(m_nodesCurSystem);
+			scpstp.InstallScpsTp(m_nodesCurSystem);*/
 
 			QuicHelper internet2;
 			internet2.InstallQuic(m_nodesCurSystemVirtual);
-			scpstp.InstallScpsTp(m_nodesCurSystemVirtual);
+			//scpstp.InstallScpsTp(m_nodesCurSystemVirtual);
 
 			if(m_groundStationNodes.GetN () == 0){
 				return;
@@ -1177,8 +1179,9 @@ namespace ns3 {
 			//internet2.SetSAGTransportLayerType(m_basicSimulation->GetConfigParamOrDefault("transport_layer_protocal", "ns3::SAGTransportLayer"));
 			internet3.InstallQuic(m_nodesGsCurSystem);
 			internet2.InstallQuic(m_nodesGsCurSystemVirtual);
+			/*
 			scpstp.InstallScpsTp(m_nodesGsCurSystem);
-			scpstp.InstallScpsTp(m_nodesGsCurSystemVirtual);
+			scpstp.InstallScpsTp(m_nodesGsCurSystemVirtual);*/
 
 //		  if(m_system_id == 0){
 //			std::stringstream stream;
@@ -1192,13 +1195,14 @@ namespace ns3 {
     	}
     	else{
     		QuicHelper internet1;
+				/*
 				//ScpsTpHelper
-				ScpsTpHelper scpstp;
+				ScpsTpHelper scpstp;*/
 			internet1.SetRoutingHelper(list);
 			internet1.SetRoutingHelper(v6list);
 			//internet1.SetSAGTransportLayerType(m_basicSimulation->GetConfigParamOrDefault("transport_layer_protocal", "ns3::SAGTransportLayer"));
 			internet1.InstallQuic(m_satelliteNodes);
-			scpstp.InstallScpsTp(m_satelliteNodes);
+			//scpstp.InstallScpsTp(m_satelliteNodes);
 
 
 			if(m_groundStationNodes.GetN () == 0){
@@ -1211,7 +1215,7 @@ namespace ns3 {
 			//internet2.SetRoutingHelper(list);
 			//internet2.SetSAGTransportLayerType(m_basicSimulation->GetConfigParamOrDefault("transport_layer_protocal", "ns3::SAGTransportLayer"));
 			internet2.InstallQuic(m_groundStationNodes);
-			scpstp.InstallScpsTp(m_groundStationNodes);
+			//scpstp.InstallScpsTp(m_groundStationNodes);
     	}
 
     	m_basicSimulation->RegisterTimestamp("Install Internet stacks");
