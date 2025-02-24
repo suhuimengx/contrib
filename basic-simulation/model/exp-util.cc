@@ -576,6 +576,9 @@ void read_config(const std::string& run_dir, std::map<std::string, std::string>&
 			config[key] = value;
 			key = trim("gsl_max_queue_size_pkts");
 			value = remove_start_end_double_quote_if_present(trim(vi.gsl_max_queue_size_pkts));
+            config[key] = value;
+            key = trim("gsl_error_rate_per_pkt");
+            value = remove_start_end_double_quote_if_present(trim(vi.gsl_error_rate_per_pkt));
 			config[key] = value;
 			key = trim("enable_csma");
 			value = remove_start_end_double_quote_if_present(trim(vi.csma.csma_enabled));
@@ -603,6 +606,9 @@ void read_config(const std::string& run_dir, std::map<std::string, std::string>&
 			key = trim("isl_max_queue_size_pkts");
 			value = remove_start_end_double_quote_if_present(trim(vj.isl_max_queue_size_pkts));
 			config[key] = value;
+            key = trim("isl_error_rate_per_pkt");
+            value = remove_start_end_double_quote_if_present(trim(vj.isl_error_rate_per_pkt));
+            config[key] = value;
 			key = trim("enable_p2p_protocol");
 			value = remove_start_end_double_quote_if_present(trim(vj.ppp.ppp_enabled));
 			config[key] = value;

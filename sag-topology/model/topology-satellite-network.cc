@@ -158,8 +158,11 @@ namespace ns3 {
         m_gsl_data_rate_megabit_per_s = parse_positive_double(m_basicSimulation->GetConfigParamOrFail("gsl_data_rate_megabit_per_s"));
         m_isl_max_queue_size_pkts = parse_positive_int64(m_basicSimulation->GetConfigParamOrFail("isl_max_queue_size_pkts"));
         m_gsl_max_queue_size_pkts = parse_positive_int64(m_basicSimulation->GetConfigParamOrFail("gsl_max_queue_size_pkts"));
-
-        // Utilization tracking settings
+        
+				m_isl_error_rate_per_pkt = parse_positive_double(m_basicSimulation->GetConfigParamOrFail("isl_error_rate_per_pkt"));
+				m_gsl_error_rate_per_pkt = parse_positive_double(m_basicSimulation->GetConfigParamOrFail("gsl_error_rate_per_pkt"));
+				
+				// Utilization tracking settings
         m_enable_link_utilization_tracking = parse_boolean(m_basicSimulation->GetConfigParamOrFail("enable_link_utilization_tracing"));
         if (m_enable_link_utilization_tracking) {
             m_link_utilization_tracking_interval_ns = parse_positive_int64(m_basicSimulation->GetConfigParamOrFail("link_utilization_tracking_interval_ns"));
@@ -228,7 +231,7 @@ namespace ns3 {
 
         std::cout << std::endl;
 
-				
+				// 校验队列管理器是否安装了RedQueueDisc
 				// for(uint32_t i = 0; i < m_satelliteNodes.GetN(); i++){
 				//     if( m_satelliteNodes.Get(i)->GetObject<TrafficControlLayer>() != 0){
 				//         for(uint32_t j = 0; j < m_satelliteNodes.Get(i)->GetNDevices(); j++)
@@ -256,6 +259,25 @@ namespace ns3 {
 				//         std::cout << "GroundStation [" << i << "] hasn't " <<  "TrafficControlLayer" << std::endl;
 				//     }
 				// }
+
+
+				//校验是否配置了错误模型
+				/*
+				 for(uint32_t i = 0; i < m_satelliteNodes.GetN(); i++){
+				     for(uint32_t j = 0; j < m_satelliteNodes.Get(i)->GetNDevices(); j++)
+				     {
+				         Ptr<NetDevice> netDevice = m_satelliteNodes.Get(i)->GetDevice(j);
+							  Ptr<RateErrorModel> errorModel = netDevice->GetObject<RateErrorModel>();
+				         }
+				     }
+				 for(uint32_t i = 0; i < m_groundStationNodes.GetN(); i++){
+				     for(uint32_t j = 0; j < m_groundStationNodes.Get(i)->GetNDevices(); j++)
+				     {
+				         Ptr<NetDevice> netDevice = m_groundStationNodes.Get(i)->GetDevice(j);
+							  Ptr<RateErrorModel> errorModel = netDevice->GetObject<RateErrorModel>();
+				     }
+				 }*/
+
 		}
 
     void
@@ -305,6 +327,9 @@ namespace ns3 {
         m_gsl_data_rate_megabit_per_s = parse_positive_double(m_basicSimulation->GetConfigParamOrFail("gsl_data_rate_megabit_per_s"));
         m_isl_max_queue_size_pkts = parse_positive_int64(m_basicSimulation->GetConfigParamOrFail("isl_max_queue_size_pkts"));
         m_gsl_max_queue_size_pkts = parse_positive_int64(m_basicSimulation->GetConfigParamOrFail("gsl_max_queue_size_pkts"));
+
+				m_isl_error_rate_per_pkt = parse_positive_double(m_basicSimulation->GetConfigParamOrFail("isl_error_rate_per_pkt"));
+				m_gsl_error_rate_per_pkt = parse_positive_double(m_basicSimulation->GetConfigParamOrFail("gsl_error_rate_per_pkt"));
 
         m_networkAddressingMethod->SetBasicSimHandle(m_basicSimulation);
 		m_networkAddressingMethod->SetTopologyHandle(m_constellations, m_groundStationNodes, m_switchStrategy);
@@ -1272,6 +1297,8 @@ namespace ns3 {
 				// Create Netdevice and others
 				DoCreateNetDevice(sat0_id, sat1_id, p2p_laser_helper, tch_isl, adjacency, islNetDevices, islFromTo, islFromToUnique);
 
+
+
 				counter += 1;
 			}
 			fs.close();
@@ -1555,6 +1582,15 @@ namespace ns3 {
       tch_isl_ecn.Install(netDevices.Get(0));
 			tch_isl_ecn.Install(netDevices.Get(1));
 
+
+			// Install Error Model
+				Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel>(
+						"RanVar", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+						"ErrorRate", DoubleValue (m_isl_error_rate_per_pkt),
+						"ErrorUnit", EnumValue (RateErrorModel::ErrorUnit::ERROR_UNIT_PACKET));
+				netDevices.Get(0)->SetAttribute("ReceiveErrorModel", PointerValue(em));
+				netDevices.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue(em));
+			
 //        // Utilization tracking
 //        if (m_enable_link_utilization_tracking) {
 //            netDevices.Get(0)->GetObject<SAGLinkLayer>()->EnableUtilizationTracking(m_link_utilization_tracking_interval_ns);
@@ -1621,6 +1657,15 @@ namespace ns3 {
 //            netDevices.Get(0)->GetObject<SAGLinkLayer>()->EnableUtilizationTracking(m_link_utilization_tracking_interval_ns);
 //            netDevices.Get(1)->GetObject<SAGLinkLayer>()->EnableUtilizationTracking(m_link_utilization_tracking_interval_ns);
 //        }
+
+			// Install Error Model
+			Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel>(
+				"RanVar", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+				"ErrorRate", DoubleValue (m_isl_error_rate_per_pkt),
+				"ErrorUnit", EnumValue (RateErrorModel::ErrorUnit::ERROR_UNIT_PACKET));
+		netDevices.Get(0)->SetAttribute("ReceiveErrorModel", PointerValue(em));
+		netDevices.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue(em));
+
 		islNetDevices.AddWithKey(netDevices.Get(0), CalStringKey(satId0, satId1));
 		islFromToUnique.push_back(std::make_pair(satId0, satId1));
 		islFromTo.push_back(std::make_pair(satId0, satId1));
@@ -2168,6 +2213,7 @@ namespace ns3 {
 		std::string max_queue_size_str = format_string("%" PRId64 "p", m_gsl_max_queue_size_pkts);
 		gsl_helper.SetQueue("ns3::DropTailQueue<Packet>", "MaxSize", QueueSizeValue(QueueSize(max_queue_size_str)));
 		gsl_helper.SetDeviceAttribute ("DataRate", DataRateValue (DataRate (std::to_string(m_gsl_data_rate_megabit_per_s) + "Mbps")));
+		//gsl_helper.SetDeviceAttribute ("DataRate", DataRateValue (DataRate ("1Mbps")));
 		gsl_helper.SetDeviceAttribute ("MaxFeederLinkNumber", UintegerValue((uint16_t)std::stoi(m_basicSimulation->GetConfigParamOrFail("maximum_feeder_link_number"))));
 		std::cout << "    >> GSL data rate........ " << m_gsl_data_rate_megabit_per_s << " Mbit/s" << std::endl;
 		std::cout << "    >> GSL max queue size... " << m_gsl_max_queue_size_pkts << " packets" << std::endl;
@@ -2230,19 +2276,17 @@ namespace ns3 {
 			std::cout << "    >> Finished initializing Arps for all satellites" << std::endl;
 		}
 		std::cout << "    >> GSL interfaces of satellites are setup" << std::endl;
-
+		
 		for(uint32_t k = 0; k < m_gslSatNetDevices.GetN(); k++){
 			Ptr<NetDevice> nd = m_gslSatNetDevices.Get(k);
 			Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel>(
 					"RanVar", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
-					"ErrorRate", DoubleValue (0.0),
+					"ErrorRate", DoubleValue (m_gsl_error_rate_per_pkt),
 					"ErrorUnit", EnumValue (RateErrorModel::ErrorUnit::ERROR_UNIT_PACKET));
 			nd->SetAttribute("ReceiveErrorModel", PointerValue(em));
 		}
 		std::cout << "    >> Receive error model of GSL are setup (satellite end)" << std::endl;
-
-
-    }
+	}
 
     void TopologySatelliteNetwork::InstallGSLInterfaceForAllGroundStations(){
     	// Link helper
@@ -2270,7 +2314,7 @@ namespace ns3 {
 			Ptr<NetDevice> nd = m_gslGsNetDevices.Get(k);
 			Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel>(
 					"RanVar", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
-					"ErrorRate", DoubleValue (0.0),
+					"ErrorRate", DoubleValue (m_gsl_error_rate_per_pkt),
 					"ErrorUnit", EnumValue (RateErrorModel::ErrorUnit::ERROR_UNIT_PACKET));
 			nd->SetAttribute("ReceiveErrorModel", PointerValue(em));
 		}

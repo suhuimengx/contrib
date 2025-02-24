@@ -113,6 +113,7 @@ namespace jsonns {
         std::string enable_gsl_data_rate_fixed;
         std::string gsl_data_rate_megabit_per_s;
         std::string gsl_max_queue_size_pkts;
+				std::string gsl_error_rate_per_pkt;
         csma_info csma;
         aloha_info aloha;
         fdma_info fdma;
@@ -124,6 +125,7 @@ namespace jsonns {
     	v.enable_gsl_data_rate_fixed = j.at("enable_gsl_data_rate_fixed").dump();
     	v.gsl_data_rate_megabit_per_s = j.at("gsl_data_rate_megabit_per_s").dump();
     	v.gsl_max_queue_size_pkts = j.at("gsl_max_queue_size_pkts").dump();
+			v.gsl_error_rate_per_pkt = j.at("gsl_error_rate_per_pkt").dump();
         v.csma = j.at("csma");
         v.aloha = j.at("aloha");
         v.fdma = j.at("fdma");
@@ -151,6 +153,7 @@ namespace jsonns {
         std::string enable_isl_data_rate_fixed;
         std::string isl_data_rate_megabit_per_s;
         std::string isl_max_queue_size_pkts;
+				std::string isl_error_rate_per_pkt;
         ppp_info ppp;
         hdlc_info hdlc;
 		std::string enable_grid_type_isl_establish;
@@ -160,6 +163,7 @@ namespace jsonns {
     	v.enable_isl_data_rate_fixed = j.at("enable_isl_data_rate_fixed").dump();
     	v.isl_data_rate_megabit_per_s = j.at("isl_data_rate_megabit_per_s").dump();
     	v.isl_max_queue_size_pkts = j.at("isl_max_queue_size_pkts").dump();
+			v.isl_error_rate_per_pkt = j.at("isl_error_rate_per_pkt").dump();
         v.ppp = j.at("ppp");
         v.hdlc = j.at("hdlc");
         v.enable_grid_type_isl_establish = j.at("enable_grid_type_isl_establish").dump();
