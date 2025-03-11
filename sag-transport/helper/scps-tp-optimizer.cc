@@ -135,6 +135,8 @@ void ScpsTpOptimizer::Generic(std::string filename) {
         }
 
 
+				Config::SetDefault ("ns3::ScpsTpL4Protocol::RecoveryType",TypeIdValue (TypeId::LookupByName ("ns3::TcpClassicRecovery")));
+
 		}
 		else{
 			throw std::runtime_error(format_string("File %s could not be read.", filename.c_str()));

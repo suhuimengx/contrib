@@ -1590,6 +1590,15 @@ namespace ns3 {
 						"ErrorUnit", EnumValue (RateErrorModel::ErrorUnit::ERROR_UNIT_PACKET));
 				netDevices.Get(0)->SetAttribute("ReceiveErrorModel", PointerValue(em));
 				netDevices.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue(em));
+				/*Ptr<NormalRandomVariable> normalRv = CreateObject<NormalRandomVariable>();
+				normalRv->SetAttribute("Mean", DoubleValue(0.0));      
+				normalRv->SetAttribute("Variance", DoubleValue(1.0));  
+				Ptr<RateErrorModel> em = CreateObject<RateErrorModel>();
+				em->SetAttribute("RanVar", PointerValue(normalRv));
+				em->SetAttribute("ErrorRate", DoubleValue(m_isl_error_rate_per_pkt));
+				em->SetAttribute("ErrorUnit", EnumValue(RateErrorModel::ERROR_UNIT_PACKET));
+				netDevices.Get(0)->SetAttribute("ReceiveErrorModel", PointerValue(em));
+				netDevices.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue(em));*/
 			
 //        // Utilization tracking
 //        if (m_enable_link_utilization_tracking) {
@@ -1659,12 +1668,23 @@ namespace ns3 {
 //        }
 
 			// Install Error Model
+			
 			Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel>(
-				"RanVar", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+				"RanVar", StringValue("ns3::NormalRandomVariable[Min=0.0|Max=1.0]"),
 				"ErrorRate", DoubleValue (m_isl_error_rate_per_pkt),
 				"ErrorUnit", EnumValue (RateErrorModel::ErrorUnit::ERROR_UNIT_PACKET));
 		netDevices.Get(0)->SetAttribute("ReceiveErrorModel", PointerValue(em));
 		netDevices.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue(em));
+	/*	
+	Ptr<NormalRandomVariable> normalRv = CreateObject<NormalRandomVariable>();
+	normalRv->SetAttribute("Mean", DoubleValue(0.0));      
+	normalRv->SetAttribute("Variance", DoubleValue(1.0));  
+	Ptr<RateErrorModel> em = CreateObject<RateErrorModel>();
+	em->SetAttribute("RanVar", PointerValue(normalRv));
+	em->SetAttribute("ErrorRate", DoubleValue(m_isl_error_rate_per_pkt));
+	em->SetAttribute("ErrorUnit", EnumValue(RateErrorModel::ERROR_UNIT_PACKET));
+	netDevices.Get(0)->SetAttribute("ReceiveErrorModel", PointerValue(em));
+	netDevices.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue(em));*/
 
 		islNetDevices.AddWithKey(netDevices.Get(0), CalStringKey(satId0, satId1));
 		islFromToUnique.push_back(std::make_pair(satId0, satId1));
