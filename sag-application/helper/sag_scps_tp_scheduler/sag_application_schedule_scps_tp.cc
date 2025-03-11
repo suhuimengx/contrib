@@ -456,7 +456,6 @@
 
        
        const std::vector<double> pkt_delay =  sagApplicationFtpIncoming->GetRecordDelaymsDetailsTimeStampLogUs();
-        // 计算平均值（带空指针保护）
         double average_delay;
         if (pkt_delay.empty()) {
           average_delay = 0.0;

@@ -155,7 +155,6 @@ void SAGApplicationLayerScpsTpSink::HandleRead(Ptr<Socket> socket) {
             //RecordDetailsLog(packet);
 
             // Record delay 
-            // 这种方式在单个packet包含多个tag时只会处理第一个
             m_recordTimeStampLog_us.push_back(Simulator::Now().GetMicroSeconds());
             DelayTraceTag delayTag;
             if(packet->PeekPacketTag(delayTag)){

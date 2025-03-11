@@ -31,6 +31,7 @@
 #include "ns3/packet.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/tcp-socket-factory.h"
+#include "ns3/delay_trace_tag.h"
 
 namespace ns3 {
 
@@ -150,6 +151,26 @@ void SAGApplicationLayerTcpSink::HandleRead(Ptr<Socket> socket) {
         // Log precise trace
 		if (m_enableDetailedLogging) {
 			RecordDetailsLogRouteOnly(packet);
+            //RecordDetailsLog(packet);
+
+            // Record delay 
+            m_recordTimeStampLog_us.push_back(Simulator::Now().GetMicroSeconds());
+            DelayTraceTag delayTag;
+            if(packet->PeekPacketTag(delayTag)){
+                delayTag.Print(std::cout);
+                double delay_us = ((uint64_t)Simulator::Now().GetNanoSeconds() - delayTag.GetStartTime()) / 1e3;
+                m_delaymsDetailsTimeStampLog_us.push_back(delay_us);
+                if(m_minDelay_us > delay_us){
+                    m_minDelay_us = delay_us;
+                }
+                if(m_maxDelay_us < delay_us){
+                    m_maxDelay_us = delay_us;
+                }
+            }
+            else if(!packet->PeekPacketTag(delayTag)){
+                //printf("No Delay Trace Packet Tag\n");
+                return;
+            }
 		}
 
     }

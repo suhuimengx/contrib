@@ -453,6 +453,33 @@ void SAGApplicationSchedulerTcp::WriteResults() {
 			} else {
 				std::cout << "Failed to create JSON file." << std::endl;
 			}
+
+			const std::vector<double> pkt_delay =  sagApplicationFtpIncoming->GetRecordDelaymsDetailsTimeStampLogUs();
+			double average_delay;
+			if (pkt_delay.empty()) {
+				average_delay = 0.0;
+			}
+			else{
+				double sum = 0.0;
+				for (const auto& delay : pkt_delay) {
+						sum += delay;
+				}
+				average_delay = sum / pkt_delay.size();
+			}
+			
+			nlohmann::ordered_json jsonObject1;
+			jsonObject1["name"] = "tcp_" + std::to_string(info.GetTcpFlowId());
+			jsonObject1["average_delay"] = average_delay;
+			jsonObject1["delay_sample_us"] = pkt_delay;
+			jsonObject1["time_stamp_us"] = record_timestamp;
+			std::ofstream pathRecord1(m_basicSimulation->GetRunDir() + "/results/network_results/object_statistics/tcp_" + std::to_string(info.GetTcpFlowId())+"/tcp_" + std::to_string(info.GetTcpFlowId())+"_delay_log.json", std::ofstream::out);
+			if (pathRecord1.is_open()) {
+				pathRecord1 << jsonObject1.dump(4);  // 使用缩进格式将 JSON 内容写入文件
+				pathRecord1.close();
+				//std::cout << "JSON file created successfully." << std::endl;
+			} else {
+				std::cout << "Failed to create JSON file." << std::endl;
+			}
 		}
 
 
@@ -467,7 +494,7 @@ void SAGApplicationSchedulerTcp::WriteResults() {
 
 			const std::vector<int64_t> record_timestamp =  sagApplicationFtpIncoming->GetRecordTimeStampLogUs();
 			const std::vector<int64_t> record_process_timestamp =  sagApplicationFtpIncoming->GetRecordProcessTimeStampLogUs();
-			const std::vector<double> pkt_delay =  sagApplicationFtpIncoming->GetRecordDelaymsDetailsTimeStampLogUs();
+
 			const std::vector<uint64_t> pkt_size = sagApplicationFtpIncoming->GetRecordPktSizeBytes();
 			std::vector<double> flow_rate;
 			for(uint32_t i = 0; i < pkt_size.size() - 1; i++){
@@ -477,18 +504,7 @@ void SAGApplicationSchedulerTcp::WriteResults() {
 
 			//std::cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!"<<m_basicSimulation->GetRunDir() + "/results/network_results/object_statistics/ftp_" + std::to_string(info.GetFtpFlowId())+"/ftp_" + std::to_string(info.GetFtpFlowId())+"_delay_log.json"<<std::endl;
 
-			nlohmann::ordered_json jsonObject1;
-			jsonObject1["name"] = "tcp_" + std::to_string(info.GetTcpFlowId());
-			jsonObject1["delay_sample_us"] = pkt_delay;
-			jsonObject1["time_stamp_us"] = record_timestamp;
-			std::ofstream pathRecord1(m_basicSimulation->GetRunDir() + "/results/network_results/object_statistics/tcp_" + std::to_string(info.GetTcpFlowId())+"/tcp_" + std::to_string(info.GetTcpFlowId())+"_delay_log.json", std::ofstream::out);
-			if (pathRecord1.is_open()) {
-				pathRecord1 << jsonObject1.dump(4);  // 使用缩进格式将 JSON 内容写入文件
-				pathRecord1.close();
-				//std::cout << "JSON file created successfully." << std::endl;
-			} else {
-				std::cout << "Failed to create JSON file." << std::endl;
-			}
+
 
 			nlohmann::ordered_json jsonObject2;
 			jsonObject2["name"] = "tcp_" + std::to_string(info.GetTcpFlowId());

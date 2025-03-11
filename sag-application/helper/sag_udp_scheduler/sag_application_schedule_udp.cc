@@ -248,6 +248,19 @@ void SAGApplicationSchedulerUdp::WriteResults()
             const std::vector<int64_t> record_timestamp =  sagApplicationUdpIncoming->GetRecordTimeStampLogUs();
             const std::vector<double> pkt_delay =  sagApplicationUdpIncoming->GetRecordDelaymsDetailsTimeStampLogUs();
             const std::vector<uint64_t> pkt_size = sagApplicationUdpIncoming->GetRecordPktSizeBytes();
+            
+            double average_delay;
+            if (pkt_delay.empty()) {
+				average_delay = 0.0;
+			}
+			else{
+				double sum = 0.0;
+				for (const auto& delay : pkt_delay) {
+						sum += delay;
+				}
+				average_delay = sum / pkt_delay.size();
+			}
+
             std::vector<double> flow_rate;
             for(uint32_t i = 0; i < pkt_size.size() - 1; i++){
             	uint32_t j = i + 1;
@@ -278,6 +291,7 @@ void SAGApplicationSchedulerUdp::WriteResults()
 
 			nlohmann::ordered_json jsonObject1;
 			jsonObject1["name"] = "udp_" + std::to_string(info.GetBurstId());
+            jsonObject1["average_delay_ms"] = average_delay;
 			jsonObject1["delay_sample_us"] = pkt_delay;
 			jsonObject1["time_stamp_us"] = record_timestamp;
 			jsonObject1["max_delay_us"] = sagApplicationUdpIncoming->GetMaxDelayUs();
