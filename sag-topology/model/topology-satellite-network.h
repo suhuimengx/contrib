@@ -473,6 +473,7 @@ private:
 	double m_gsl_error_rate_per_pkt;
 	int64_t m_isl_max_queue_size_pkts;
 	int64_t m_gsl_max_queue_size_pkts;
+	bool m_enable_red_queue_disc;
 	bool m_enable_link_utilization_tracking = false;
 	int64_t m_link_utilization_tracking_interval_ns;
 	double m_time_end;

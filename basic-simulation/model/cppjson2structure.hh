@@ -154,6 +154,7 @@ namespace jsonns {
         std::string isl_data_rate_megabit_per_s;
         std::string isl_max_queue_size_pkts;
 				std::string isl_error_rate_per_pkt;
+				std::string enable_red_queue_disc;
         ppp_info ppp;
         hdlc_info hdlc;
 		std::string enable_grid_type_isl_establish;
@@ -164,6 +165,7 @@ namespace jsonns {
     	v.isl_data_rate_megabit_per_s = j.at("isl_data_rate_megabit_per_s").dump();
     	v.isl_max_queue_size_pkts = j.at("isl_max_queue_size_pkts").dump();
 			v.isl_error_rate_per_pkt = j.at("isl_error_rate_per_pkt").dump();
+			v.enable_red_queue_disc = j.at("enable_red_queue_disc").dump();
         v.ppp = j.at("ppp");
         v.hdlc = j.at("hdlc");
         v.enable_grid_type_isl_establish = j.at("enable_grid_type_isl_establish").dump();

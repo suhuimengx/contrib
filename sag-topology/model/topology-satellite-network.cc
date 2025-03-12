@@ -25,7 +25,6 @@
 #include "ns3/satellite.h"
 #include <random>
 #include "ns3/quic-helper.h"
-#include "ns3/scpstp-helper.h"
 #include "ns3/traffic-control-layer.h"
 #include "ns3/red-queue-disc.h"
 
@@ -161,6 +160,7 @@ namespace ns3 {
         
 				m_isl_error_rate_per_pkt = parse_positive_double(m_basicSimulation->GetConfigParamOrFail("isl_error_rate_per_pkt"));
 				m_gsl_error_rate_per_pkt = parse_positive_double(m_basicSimulation->GetConfigParamOrFail("gsl_error_rate_per_pkt"));
+				m_enable_red_queue_disc = parse_boolean(m_basicSimulation->GetConfigParamOrDefault("enable_red_queue_disc", "false"));
 				
 				// Utilization tracking settings
         m_enable_link_utilization_tracking = parse_boolean(m_basicSimulation->GetConfigParamOrFail("enable_link_utilization_tracing"));
@@ -231,52 +231,7 @@ namespace ns3 {
 
         std::cout << std::endl;
 
-				// 校验队列管理器是否安装了RedQueueDisc
-				// for(uint32_t i = 0; i < m_satelliteNodes.GetN(); i++){
-				//     if( m_satelliteNodes.Get(i)->GetObject<TrafficControlLayer>() != 0){
-				//         for(uint32_t j = 0; j < m_satelliteNodes.Get(i)->GetNDevices(); j++)
-				//         {
-				//             Ptr<TrafficControlLayer> trafficControlLayer = m_satelliteNodes.Get(i)->GetObject<TrafficControlLayer>();
-				//             // 获取RedQueueDisc 的tid
-				//             TypeId tid = ns3::RedQueueDisc::GetTypeId();
-				//             std::cout << tid << std::endl;
-				//         }
-				//         //std::cout << "Satellite [" << i << "] has " <<  "TrafficControlLayer: " << m_satelliteNodes.Get(i)->GetObject<TrafficControlLayer>()-> GetRootQueueDiscOnDevice(m_satelliteNodes.Get(i)->GetDevice(j))->GetInstanceTypeId().GetName() << std::endl;
-				//     }
-				//     else{
-				//         std::cout << "Satellite [" << i << "] hasn't " <<  "TrafficControlLayer" << std::endl;
-				//     }
-				// }
-				// for(uint32_t i = 0; i < m_groundStationNodes.GetN(); i++){
-				//     if( m_groundStationNodes.Get(i)->GetObject<TrafficControlLayer>() != 0){
-				//         for(uint32_t j = 0; j < m_groundStationNodes.Get(i)->GetNDevices(); j++)
-				//         {
-				//             Ptr<TrafficControlLayer> trafficControlLayer = m_groundStationNodes.Get(i)->GetObject<TrafficControlLayer>();
-				//         }
-				//         //std::cout << "GroundStation [" << i << "] has " <<  "TrafficControlLayer: " << m_groundStationNodes.Get(i)->GetObject<TrafficControlLayer>()-> GetRootQueueDiscOnDevice(m_groundStationNodes.Get(i)->GetDevice(j))->GetInstanceTypeId().GetName() << std::endl;
-				//     }
-				//     else{
-				//         std::cout << "GroundStation [" << i << "] hasn't " <<  "TrafficControlLayer" << std::endl;
-				//     }
-				// }
 
-
-				//校验是否配置了错误模型
-				/*
-				 for(uint32_t i = 0; i < m_satelliteNodes.GetN(); i++){
-				     for(uint32_t j = 0; j < m_satelliteNodes.Get(i)->GetNDevices(); j++)
-				     {
-				         Ptr<NetDevice> netDevice = m_satelliteNodes.Get(i)->GetDevice(j);
-							  Ptr<RateErrorModel> errorModel = netDevice->GetObject<RateErrorModel>();
-				         }
-				     }
-				 for(uint32_t i = 0; i < m_groundStationNodes.GetN(); i++){
-				     for(uint32_t j = 0; j < m_groundStationNodes.Get(i)->GetNDevices(); j++)
-				     {
-				         Ptr<NetDevice> netDevice = m_groundStationNodes.Get(i)->GetDevice(j);
-							  Ptr<RateErrorModel> errorModel = netDevice->GetObject<RateErrorModel>();
-				     }
-				 }*/
 
 		}
 
@@ -303,10 +258,7 @@ namespace ns3 {
         // Install internet stacks on all nodes
 		InternetStackHelper internet1;
 		internet1.Install(m_allNodes);
-		/*
-				// Install ScpsTp
-		ScpsTpHelper scpstp;
-		scpstp.Install(m_allNodes);*/
+
     	m_basicSimulation->RegisterTimestamp("Install Internet stacks");
         std::cout << "  > Installed Internet stacks" << std::endl;
 
@@ -1176,22 +1128,18 @@ namespace ns3 {
 		}
 
     	if(m_enable_distributed){
-/*
-				//ScpsTpHelper
-				ScpsTpHelper scpstp;*/
+
     		// InternetStackHelper
     		QuicHelper internet1;
 			internet1.SetRoutingHelper(list);
 			internet1.SetRoutingHelper(v6list);
 			//internet1.SetSAGTransportLayerType(m_basicSimulation->GetConfigParamOrDefault("transport_layer_protocal", "ns3::SAGTransportLayer"));
 			internet1.InstallQuic(m_nodesCurSystem);
-			/*
-			//Install ScpsTp
-			scpstp.InstallScpsTp(m_nodesCurSystem);*/
+
 
 			QuicHelper internet2;
 			internet2.InstallQuic(m_nodesCurSystemVirtual);
-			//scpstp.InstallScpsTp(m_nodesCurSystemVirtual);
+
 
 			if(m_groundStationNodes.GetN () == 0){
 				return;
@@ -1204,9 +1152,7 @@ namespace ns3 {
 			//internet2.SetSAGTransportLayerType(m_basicSimulation->GetConfigParamOrDefault("transport_layer_protocal", "ns3::SAGTransportLayer"));
 			internet3.InstallQuic(m_nodesGsCurSystem);
 			internet2.InstallQuic(m_nodesGsCurSystemVirtual);
-			/*
-			scpstp.InstallScpsTp(m_nodesGsCurSystem);
-			scpstp.InstallScpsTp(m_nodesGsCurSystemVirtual);*/
+
 
 //		  if(m_system_id == 0){
 //			std::stringstream stream;
@@ -1220,14 +1166,12 @@ namespace ns3 {
     	}
     	else{
     		QuicHelper internet1;
-				/*
-				//ScpsTpHelper
-				ScpsTpHelper scpstp;*/
+	
 			internet1.SetRoutingHelper(list);
 			internet1.SetRoutingHelper(v6list);
 			//internet1.SetSAGTransportLayerType(m_basicSimulation->GetConfigParamOrDefault("transport_layer_protocal", "ns3::SAGTransportLayer"));
 			internet1.InstallQuic(m_satelliteNodes);
-			//scpstp.InstallScpsTp(m_satelliteNodes);
+
 
 
 			if(m_groundStationNodes.GetN () == 0){
@@ -1240,7 +1184,7 @@ namespace ns3 {
 			//internet2.SetRoutingHelper(list);
 			//internet2.SetSAGTransportLayerType(m_basicSimulation->GetConfigParamOrDefault("transport_layer_protocal", "ns3::SAGTransportLayer"));
 			internet2.InstallQuic(m_groundStationNodes);
-			//scpstp.InstallScpsTp(m_groundStationNodes);
+
     	}
 
     	m_basicSimulation->RegisterTimestamp("Install Internet stacks");
@@ -1574,13 +1518,17 @@ namespace ns3 {
         tch_uninstaller.Uninstall(netDevices.Get(0));
         tch_uninstaller.Uninstall(netDevices.Get(1));
 
-			// Install traffic control layer on islNetdevices with ECN enabled
-			TrafficControlHelper tch_isl_ecn;
-			Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
-				QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, m_isl_max_queue_size_pkts)));
-			tch_isl_ecn.SetRootQueueDisc("ns3::RedQueueDisc","UseEcn", BooleanValue(true));
-      tch_isl_ecn.Install(netDevices.Get(0));
-			tch_isl_ecn.Install(netDevices.Get(1));
+			if(m_enable_red_queue_disc)
+			{
+				// Install traffic control layer on islNetdevices with ECN enabled
+				TrafficControlHelper tch_isl_ecn;
+				Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
+					QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, m_isl_max_queue_size_pkts)));
+				tch_isl_ecn.SetRootQueueDisc("ns3::RedQueueDisc","UseEcn", BooleanValue(true));
+				tch_isl_ecn.Install(netDevices.Get(0));
+				tch_isl_ecn.Install(netDevices.Get(1));
+			}
+
 
 
 			// Install Error Model
@@ -1645,14 +1593,16 @@ namespace ns3 {
         TrafficControlHelper tch_uninstaller;
         tch_uninstaller.Uninstall(netDevices.Get(0));
         tch_uninstaller.Uninstall(netDevices.Get(1));
-
-			// Install traffic control layer on islNetdevices with ECN enabled
-			TrafficControlHelper tch_isl_ecn;
-			Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
+			if(m_enable_red_queue_disc)
+			{
+				// Install traffic control layer on islNetdevices with ECN enabled
+				TrafficControlHelper tch_isl_ecn;
+				Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
 				QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, m_isl_max_queue_size_pkts)));
 				tch_isl_ecn.SetRootQueueDisc("ns3::RedQueueDisc","UseEcn", BooleanValue(true));
 				tch_isl_ecn.Install(netDevices.Get(0));
 				tch_isl_ecn.Install(netDevices.Get(1));
+			}
 //        // Utilization tracking
 //        if (m_enable_link_utilization_tracking) {
 //            netDevices.Get(0)->GetObject<SAGLinkLayer>()->EnableUtilizationTracking(m_link_utilization_tracking_interval_ns);
