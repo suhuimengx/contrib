@@ -291,7 +291,7 @@ void SAGApplicationSchedulerUdp::WriteResults()
 
 			nlohmann::ordered_json jsonObject1;
 			jsonObject1["name"] = "udp_" + std::to_string(info.GetBurstId());
-            jsonObject1["average_delay_ms"] = average_delay;
+            jsonObject1["average_delay_us"] = average_delay;
 			jsonObject1["delay_sample_us"] = pkt_delay;
 			jsonObject1["time_stamp_us"] = record_timestamp;
 			jsonObject1["max_delay_us"] = sagApplicationUdpIncoming->GetMaxDelayUs();

@@ -469,7 +469,7 @@ void SAGApplicationSchedulerTcp::WriteResults() {
 			
 			nlohmann::ordered_json jsonObject1;
 			jsonObject1["name"] = "tcp_" + std::to_string(info.GetTcpFlowId());
-			jsonObject1["average_delay"] = average_delay;
+			jsonObject1["average_delay_us"] = average_delay;
 			jsonObject1["delay_sample_us"] = pkt_delay;
 			jsonObject1["time_stamp_us"] = record_timestamp;
 			std::ofstream pathRecord1(m_basicSimulation->GetRunDir() + "/results/network_results/object_statistics/tcp_" + std::to_string(info.GetTcpFlowId())+"/tcp_" + std::to_string(info.GetTcpFlowId())+"_delay_log.json", std::ofstream::out);
