@@ -2221,16 +2221,19 @@ namespace ns3 {
 
 
 
-
-		// Install traffic control layer on GSL with ECN
-		TrafficControlHelper tch_gsl_ecn;
-		Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
-			QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, m_gsl_max_queue_size_pkts)));
-		tch_gsl_ecn.SetRootQueueDisc("ns3::RedQueueDisc","UseEcn", BooleanValue(true));
-		for (uint32_t i = 0; i < devices.GetN(); i++) {
-			tch_gsl_ecn.Install(devices.Get(i));
+		if(m_enable_red_queue_disc)
+		{
+			// Install traffic control layer on GSL with ECN
+			TrafficControlHelper tch_gsl_ecn;
+			Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
+				QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, m_gsl_max_queue_size_pkts)));
+			tch_gsl_ecn.SetRootQueueDisc("ns3::RedQueueDisc","UseEcn", BooleanValue(true));
+			for (uint32_t i = 0; i < devices.GetN(); i++) {
+				tch_gsl_ecn.Install(devices.Get(i));
+			}
+			std::cout << "    >> Finished installing traffic control layer qdisc with ECN for all satellites' GSL netdevices" << std::endl;
 		}
-		std::cout << "    >> Finished installing traffic control layer qdisc with ECN for all satellites' GSL netdevices" << std::endl;
+
 
 
 		if(m_isIPv4Networking){
@@ -2457,15 +2460,18 @@ namespace ns3 {
 			// NS_ASSERT_MSG (nadr == 1, "One interface one address permitted");
 
 		}
+		if(m_enable_red_queue_disc)
+		{
+			//Install traffic control layer on GSL with ECN
+			TrafficControlHelper tch_gsl_ecn;
+			Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
+				QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, m_gsl_max_queue_size_pkts)));
+			tch_gsl_ecn.SetRootQueueDisc("ns3::RedQueueDisc","UseEcn", BooleanValue(true));
+			tch_gsl_ecn.Install(gslGsNetDevice);
+			//之前已经为gslSatNetDevice安装过TrafficControlLayer，所以这里不需要再次安装
+			//tch_gsl_ecn.Install(gslSatNetDevice);
+		}
 
-		//Install traffic control layer on GSL with ECN
-		TrafficControlHelper tch_gsl_ecn;
-		Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
-			QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, m_gsl_max_queue_size_pkts)));
-		tch_gsl_ecn.SetRootQueueDisc("ns3::RedQueueDisc","UseEcn", BooleanValue(true));
-		tch_gsl_ecn.Install(gslGsNetDevice);
-		//之前已经为gslSatNetDevice安装过TrafficControlLayer，所以这里不需要再次安装
-		//tch_gsl_ecn.Install(gslSatNetDevice);
 
 
 		// notify sat L3

@@ -16,7 +16,7 @@ void QuicOptimizer::Generic(std::string filename) {
 
 		    // Initial congestion window
 		    uint32_t init_cwnd_pkts = 10;  // 1 is default, but we use 10
-		    init_cwnd_pkts = j["quic"]["initial_CWND_packets"];
+		    init_cwnd_pkts = j["quic"]["initial_slow_start_threshold"];
 		    printf("  > Initial CWND............... %u packets\n", init_cwnd_pkts);
 		    Config::SetDefault("ns3::QuicSocketBase::InitialSlowStartThreshold", UintegerValue(init_cwnd_pkts));
 

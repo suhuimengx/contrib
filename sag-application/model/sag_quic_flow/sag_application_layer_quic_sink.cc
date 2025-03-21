@@ -139,6 +139,16 @@ void SAGApplicationLayerQuicSink::HandleRead(Ptr<Socket> socket) {
         //std::cout<<Simulator::Now().GetSeconds()<<"  "<<packet->GetSize ()<<std::endl;
         m_totalRx += packet->GetSize ();
 
+        #if 0
+        std::string filePath = "/home/liyisen/tarballs/SAG_Platform/data/test_data/logs_ns3/QuicSinkApp_"
+        + std::to_string(m_node->GetId()) +"_" + std::to_string(InetSocketAddress::ConvertFrom(from).GetPort()) + ".txt";
+        std::ofstream file(filePath, std::ios::app);
+        if(file.is_open()){
+            file << (int)packet->GetSize () << ","<<Simulator::Now().GetMilliSeconds() << std::endl;
+            file.close();
+        }
+        #endif
+
         m_totalRxBytes += packet->GetSize ();
         m_totalRxPacketNumber += 1;
 

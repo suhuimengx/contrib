@@ -267,7 +267,18 @@ void SAGApplicationLayerQuicSend::SendData(void) {
 		m_totBytes += actual;
 		m_txTrace(packet);
 	}
-	// We exit this loop when actual < toSend as the send side
+
+    #if 0
+        std::string filePath = "/home/liyisen/tarballs/SAG_Platform/data/test_data/logs_ns3/QuicSendApp_"
+        + std::to_string(m_node->GetId()) +"_" + std::to_string(InetSocketAddress::ConvertFrom(m_peer).GetPort()) + ".txt";
+        std::ofstream file(filePath, std::ios::app);
+        if(file.is_open()){
+            file << actual << ","<<Simulator::Now().GetMilliSeconds() << std::endl;
+            file.close();
+        }
+    #endif
+    
+    // We exit this loop when actual < toSend as the send side
 	// buffer is full. The "DataSent" callback will pop when
 	// some buffer space has freed up.
 	if ((unsigned) actual != bytesToSend) {
@@ -351,6 +362,8 @@ void SAGApplicationLayerQuicSend::ConnectionSucceeded(Ptr <Socket> socket) {
 
     NS_LOG_FUNCTION(this << socket);
     NS_LOG_LOGIC("SAGApplicationLayerQuicSend Connection succeeded");
+    std::cout<<std::to_string(m_node->GetId()) +"_" + 
+    std::to_string(InetSocketAddress::ConvertFrom(m_peer).GetPort())<<" Connection Succeed!"<<std::endl;
     m_connected = true;
     SendData();
 }
